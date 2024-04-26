@@ -10,7 +10,7 @@ import { AlbumSearchStore } from '@/albums/album-search/album-search.store';
   imports: [ProgressBarComponent, AlbumFilterComponent, AlbumListComponent],
   providers: [AlbumSearchStore],
   template: `
-    <ngrx-progress-bar [showProgress]="store.showProgress()" />
+    <ngrx-progress-bar [showProgress]="store.isPending()" />
 
     <div class="container">
       <h1>Albums ({{ store.totalAlbums() }})</h1>
@@ -24,7 +24,7 @@ import { AlbumSearchStore } from '@/albums/album-search/album-search.store';
 
       <ngrx-album-list
         [albums]="store.filteredAlbums()"
-        [showSpinner]="store.showSpinner()"
+        [showSpinner]="store.isPending()"
       />
     </div>
   `,
