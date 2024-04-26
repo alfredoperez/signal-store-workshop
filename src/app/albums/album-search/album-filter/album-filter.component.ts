@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, model } from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, Input, model} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
@@ -50,6 +50,7 @@ import { SortOrder } from '@/shared/models/sort-order.model';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AlbumFilterComponent {
+
   readonly query = model('');
   readonly order = model<SortOrder>('asc');
 
