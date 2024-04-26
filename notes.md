@@ -220,3 +220,78 @@ export class NumbersComponent implements OnInit {
 - 💡 define dependencies at the beginning 
 - 💡 Use the `tapResponse` operator from the `@ngrx/operators` package to keep the reactive method subscription alive if the request fails.
 - 💡 Use `exhaustMap` to prevent parallel calls when the reactive method is called multiple times.
+
+## Signal Store
+
+```ts
+type TodosState = { todos: Todo[] };
+
+const TodosStore = signalStore(
+  withState<TodosState>({ todos: [] }),
+  withComputed(({ todos }) => ({
+    completedTodos: computed(() =>
+      todos().filter((todo) => todo.completed)
+    ),
+  })),
+  withMethods((store) => ({
+    addTodo(todo: Todo): void {
+      patchState(store, {
+        todos: [...store.todos(), todo],
+      });
+    },
+  }))
+);
+
+```
+
+- SignalStore return an injectable and you can provide at the component level
+
+
+- Lifecycle hooks
+
+```ts
+ withHooks(({ todos }) => ({
+    onInit() {
+      console.log('todos on init', todos());
+    },
+    onDestroy() {
+      console.log('todos on destroy', todos());
+    },
+  }))
+
+```
+
+
+### Limitations of class-based approach
+
+- **Typing**: It’s not possible to define dynamic class properties or methods that are strongly typed.
+
+```ts
+@Injectable()
+export class BooksStore extends ComponentStore<BooksState> {
+
+
+
+  readonly filteredBooks = this.selectSignal(
+    this.books, ❌
+    this.query, ❌
+    (books, query) => books.filter(({ title }) => title.includes(query)),
+  );
+
+  constructor() {
+    super({ books: [], query: '', isPending: false });
+  }
+}
+```
+
+- **Tree-shaking**: Unused class methods and properties won’t be removed from the final bundle.
+
+- **Extensibility**: Multiple inheritance is not supported.
+- **Modularity**: Splitting selectors, updaters, and effects into different classes is possible, but not provided out of the box.
+  - This not the way the store it is used
+
+
+---
+
+`withMethods` to create updaters or side-effects
+`withHooks` only to trigger on initializing
