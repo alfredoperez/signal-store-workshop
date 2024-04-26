@@ -20,17 +20,14 @@ import {
   setPending,
   withRequestStatus,
 } from '@/shared/state/request-status.feature';
+import { setAllEntities, withEntities } from '@ngrx/signals/entities';
 
 type AlbumSearchState = {
-  albums: Album[];
-
   query: string;
   order: SortOrder;
 };
 
 const initialState: AlbumSearchState = {
-  albums: [],
-
   query: '',
   order: 'asc',
 };
@@ -38,7 +35,8 @@ const initialState: AlbumSearchState = {
 export const AlbumSearchStore = signalStore(
   withState(initialState),
   withRequestStatus(),
-  withComputed(({ albums, query, order, isPending }) => {
+  withEntities<Album>(),
+  withComputed(({ entities: albums, query, order, isPending }) => {
     const filteredAlbums = computed(() => {
       const searchedAlbums = searchAlbums(albums(), query());
       return sortAlbums(searchedAlbums, order());
@@ -70,7 +68,8 @@ export const AlbumSearchStore = signalStore(
           exhaustMap(() =>
             albumsService.getAll().pipe(
               tapResponse({
-                next: (albums) => patchState(store, { albums }, setFulfilled()),
+                next: (albums) =>
+                  patchState(store, setAllEntities(albums), setFulfilled()),
                 error: (error: { message: string }) =>
                   patchState(store, setError(error.message)),
               }),

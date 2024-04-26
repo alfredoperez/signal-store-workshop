@@ -357,3 +357,31 @@ export const BooksStore = signalStore(
 );
 
 ```
+
+- 💡 updaters need to be defined outside the `withMethods`, so the can be comnbined with the patch state and they are
+  tree shakeable
+
+```ts
+// request-status.feature.ts
+
+export function setPending(): RequestStatusState {
+    return {requestStatus: 'pending'};
+}
+
+
+// album-search.store.ts
+loadAllAlbums: rxMethod<void>(
+    pipe(
+        tap(() => setPending()),
+        exhaustMap(() =>
+            albumsService.getAll().pipe(
+                tapResponse({
+                    next: (albums) => patchState(store, {albums}, setFulfilled()),
+                    error: (error: { message: string }) =>
+                        patchState(store, setError(error.message)),
+                }),
+            ),
+        ),
+    ),
+),
+```
