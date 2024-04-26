@@ -53,21 +53,6 @@ export default class AlbumSearchComponent implements OnInit {
   });
 
   readonly filteredAlbums = computed(() => {
-    // return this.state
-    //   .albums()
-    //   .filter(
-    //     (album) =>
-    //       album.title
-    //         .toLowerCase()
-    //         .includes(this.state.query().toLowerCase()) ||
-    //       album.artist.toLowerCase().includes(this.state.query().toLowerCase()),
-    //   )
-    //   .sort((a, b) => {
-    //     const sort =
-    //       this.state.order() === 'asc' ? a.title > b.title : a.title < b.title;
-    //     return sort ? 1 : -1;
-    //   });
-
     const searchedAlbums = searchAlbums(
       this.state.albums(),
       this.state.query(),
@@ -110,30 +95,4 @@ export default class AlbumSearchComponent implements OnInit {
   updateOrder(order: SortOrder): void {
     patchState(this.state, { order });
   }
-
-  // private async loadAllAlbums() {
-  //   // patchState(this.state, { showProgress: true });
-  //   // try {
-  //   //   const albums = await lastValueFrom(this.#albumService.getAll());
-  //   //   patchState(this.state, { albums });
-  //   // } catch (error) {
-  //   //   this.#snackBar.open((error as Error).message, 'Close', {
-  //   //     duration: 5_000,
-  //   //   });
-  //   // } finally {
-  //   //   patchState(this.state, { showProgress: false });
-  //   // }
-  //
-  //   patchState(this.state, { showProgress: true });
-  //
-  //   this.#albumsService.getAll().subscribe({
-  //     next: (albums) => {
-  //       patchState(this.state, { albums, showProgress: false });
-  //     },
-  //     error: (error: { message: string }) => {
-  //       this.#snackBar.open(error.message, 'Close', { duration: 5_000 });
-  //       patchState(this.state, { showProgress: false });
-  //     },
-  //   });
-  // }
 }
