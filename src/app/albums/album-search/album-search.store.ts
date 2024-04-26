@@ -7,7 +7,7 @@ import {
   withState,
 } from '@ngrx/signals';
 import { Album, searchAlbums, sortAlbums } from '@/albums/album.model';
-import { SortOrder } from '@/shared/models/sort-order.model';
+import { SortOrder, toSortOrder } from '@/shared/models/sort-order.model';
 import { computed, inject } from '@angular/core';
 import { AlbumsService } from '@/albums/albums.service';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
@@ -21,6 +21,7 @@ import {
   withRequestStatus,
 } from '@/shared/state/request-status.feature';
 import { setAllEntities, withEntities } from '@ngrx/signals/entities';
+import { withQueryParams } from '@/shared/state/route/query-params.feature';
 
 type AlbumSearchState = {
   query: string;
@@ -36,6 +37,10 @@ export const AlbumSearchStore = signalStore(
   withState(initialState),
   withRequestStatus(),
   withEntities<Album>(),
+  withQueryParams({
+    query: (val) => val ?? '',
+    order: toSortOrder,
+  }),
   withComputed(({ entities: albums, query, order, isPending }) => {
     const filteredAlbums = computed(() => {
       const searchedAlbums = searchAlbums(albums(), query());
@@ -56,12 +61,6 @@ export const AlbumSearchStore = signalStore(
       albumsService = inject(AlbumsService),
       snackBar = inject(MatSnackBar),
     ) => ({
-      updateQuery(query: string) {
-        patchState(store, { query });
-      },
-      updateOrder(order: SortOrder) {
-        patchState(store, { order });
-      },
       loadAllAlbums: rxMethod<void>(
         pipe(
           tap(() => setPending()),
